@@ -5,3 +5,5 @@ gevent==1.0.1
 tornado==4.0.2
 
 gunicorn==19.1.1
+
+locustio==0.7.2
