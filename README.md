@@ -1,6 +1,8 @@
 # About
 
-Just some benchmarks tests for Gunicorn workers, see `Procfile` for details
+Just some benchmarks tests for Gunicorn workers, see `Procfile` for details.
+
+Based on https://gist.github.com/andreif/6088558
 
 # Computer
 
