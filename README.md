@@ -5,6 +5,7 @@ Just some benchmarks tests for Gunicorn workers, see `Procfile` for details
 # Computer
 
 Intel(R) Core(TM) i5-2500 CPU @ 3.30GHz
+
 16GB
 
 # Workers
@@ -27,7 +28,7 @@ Intel(R) Core(TM) i5-2500 CPU @ 3.30GHz
     Requests/sec:    348.38
     Transfer/sec:    126.91KB
 
-
+    $ ab -n 1000 -c 4 http://localhost:8000/
     Connection Times (ms)
                   min  mean[+/-sd] median   max
     Connect:        0    0   0.0      0       1
