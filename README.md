@@ -2,13 +2,15 @@
 
 Just some benchmarks tests for Gunicorn workers, see `Procfile` for details.
 
-Based on https://gist.github.com/andreif/6088558
+Based on:
+- https://gist.github.com/andreif/6088558
+- https://github.com/dvl/django-gunicorn-workers-benchmark
 
 # Computer
 
-Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz
+12th Gen Intel(R) Core(TM) i9-12900H   2.50 GHz
 
-8GB
+16GB
 
 # Workers
 
