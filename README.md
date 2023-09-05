@@ -12,113 +12,134 @@ Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz
 
 # Workers
 
-## runserver (via manage.py just because of reasons)
+## runserver (via manage.py just because of reasons, 50MB)
 
-    $ ./wrk -t12 -c400 -d30s http://127.0.0.1:8000/
-    Running 30s test @ http://127.0.0.1:8000/
-      12 threads and 400 connections
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/
+      20 threads and 40000 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   832.93ms  625.19ms   2.00s    59.43%
+        Req/Sec    93.49     89.39   650.00     85.21%
+      39449 requests in 30.09s, 16.33MB read
+      Socket errors: connect 11770, read 0, write 0, timeout 28007
+    Requests/sec:   1311.14
+    Transfer/sec:    555.74KB
+
+    $ ab -n 1000 -c 400 http://localhost:8000/
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        0    0   0.3      0       2
+    Processing:     3   10   1.8     10      23
+    Waiting:        1    8   1.5      7      20
+    Total:          3   10   1.9     10      23
+
+
+## sync (80MB)
+
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/
+      20 threads and 40000 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   562.02ms  319.58ms   1.98s    66.84%
+        Req/Sec   156.84    146.40   712.00     73.94%
+      30728 requests in 30.09s, 12.66MB read
+      Socket errors: connect 34770, read 0, write 0, timeout 2089
+    Requests/sec:   1021.03
+    Transfer/sec:    430.75KB
+
+    $ ab -n 1000 -c 400 http://localhost:8000/
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        1  119  80.0    114     326
+    Processing:     1  198 106.2    185     367
+    Waiting:        1  143  80.2    183     277
+    Total:        138  318  63.4    326     377
+
+
+## gevent (110MB)
+
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/
+      20 threads and 40000 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     7.63ms   92.40ms   1.98s    99.05%
+        Req/Sec     1.09k     1.21k    3.25k    74.31%
+      55222 requests in 30.10s, 23.01MB read
+      Socket errors: connect 32720, read 5922, write 0, timeout 3032
+    Requests/sec:   1834.90
+    Transfer/sec:    783.07KB
+
+    $ ab -n 1000 -c 400 http://localhost:8000/
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        1  129  94.4    105     361
+    Processing:     1  251 110.5    284     439
+    Waiting:        1  168  95.2    169     338
+    Total:         19  380 146.3    365     695
+
+
+## eventlet (150MB)
+
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/
+      20 threads and 40000 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency    35.75ms  221.46ms   2.00s    97.20%
+        Req/Sec   250.51    369.27     3.29k    88.90%
+      55235 requests in 30.09s, 23.02MB read
+      Socket errors: connect 32720, read 6250, write 0, timeout 2884
+    Requests/sec:   1835.67
+    Transfer/sec:    783.39KB
+
+    $ ab -n 1000 -c 400 http://localhost:8000/
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        1  127  90.7    119     363
+    Processing:     1  218 111.0    198     391
+    Waiting:        1  160  81.1    195     293
+    Total:         10  345 109.8    363     722
+
+
+## tornado (445MB - 650MB)
+
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/
+      20 threads and 40000 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.42s    47.14ms   1.51s    77.91%
+        Req/Sec   191.94    662.66     6.96k    96.07%
+      33568 requests in 30.10s, 12.39MB read
+      Socket errors: connect 11770, read 339, write 0, timeout 33405
+    Requests/sec:   1115.27
+    Transfer/sec:    421.49KB
+
+    $ ab -n 1000 -c 400 http://localhost:8000/
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        0    1   1.1      0       3
+    Processing:     4  152  24.1    165     192
+    Waiting:        1  152  24.1    165     192
+    Total:          4  153  24.3    166     195
+
+
+  ## gthread (160MB)
+
+    $ ./wrk -t20 -c40000 -d30s http://127.0.0.1:8000/
+    Running 30s test @ http://localhost:8000/ (broke)
+      20 threads and 40000 connections
       Thread Stats   Avg      Stdev     Max   +/- Stdev
         Latency     0.00us    0.00us   0.00us    -nan%
         Req/Sec     0.00      0.00     0.00      -nan%
-      0 requests in 30.02s, 3.94MB read
-      Socket errors: connect 0, read 12982, write 0, timeout 3997
+      0 requests in 30.09s, 0.00B read
+      Socket errors: connect 11770, read 0, write 0, timeout 0
     Requests/sec:      0.00
-    Transfer/sec:    134.33KB
+    Transfer/sec:       0.00B
 
-    $ ab -n 1000 -c 4 http://localhost:8000/
+    $ ab -n 1000 -c 400 http://localhost:8000/
     Connection Times (ms)
                   min  mean[+/-sd] median   max
-    Connect:        0    0   0.0      0       0
-    Processing:     2   10   2.9      9      25
-    Waiting:        2    9   2.7      8      23
-    Total:          2   10   2.9     10      25
+    Connect:        0    1   1.5      0       4
+    Processing:    19  211  62.3    221     311
+    Waiting:       14  211  62.3    221     311
+    Total:         19  212  61.6    222     313
 
-
-## sync
-
-    $ ./wrk -t12 -c400 -d30s http://127.0.0.1:8000/
-    Running 30s test @ http://127.0.0.1:8000/
-      12 threads and 400 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     5.46s     8.36s   26.30s    87.42%
-        Req/Sec    79.14    101.27   298.00     69.16%
-      17322 requests in 30.01s, 6.16MB read
-      Socket errors: connect 0, read 184, write 0, timeout 3593
-    Requests/sec:    577.24
-    Transfer/sec:    210.27KB
-
-    $ ab -n 1000 -c 4 http://localhost:8000/
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:        0    0   0.0      0       0
-    Processing:     1    4   1.0      4      18
-    Waiting:        1    4   1.0      4      18
-    Total:          1    4   1.1      4      18
-
-
-## gevent
-
-    $ ./wrk -t12 -c400 -d30s http://127.0.0.1:8000/
-    Running 30s test @ http://127.0.0.1:8000/
-      12 threads and 400 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency    24.60s    10.63s   29.20s    84.26%
-        Req/Sec   535.94    528.13     1.33k    20.69%
-      29415 requests in 30.07s, 10.60MB read
-      Socket errors: connect 0, read 62, write 0, timeout 5515
-      Non-2xx or 3xx responses: 1
-    Requests/sec:    978.37
-    Transfer/sec:    361.15KB
-
-    $ ab -n 1000 -c 4 http://localhost:8000/
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:        0    0   0.0      0       0
-    Processing:     2    5   1.2      5      18
-    Waiting:        1    5   1.2      5      18
-    Total:          2    5   1.2      5      18
-
-
-## eventlet
-
-    $ ./wrk -t12 -c400 -d30s http://127.0.0.1:8000/
-    Running 30s test @ http://127.0.0.1:8000/
-      12 threads and 400 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency    22.18s    11.17s   29.12s    79.80%
-        Req/Sec   483.90    473.59     1.33k    26.67%
-      25098 requests in 30.01s, 9.05MB read
-      Socket errors: connect 0, read 324, write 0, timeout 5557
-    Requests/sec:    836.31
-    Transfer/sec:    308.72KB
-
-    $ ab -n 1000 -c 4 http://localhost:8000/
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:        0    0   0.0      0       0
-    Processing:     4    5   1.1      5      17
-    Waiting:        4    5   1.1      5      17
-    Total:          4    5   1.1      5      17
-
-
-## tornado
-
-    $ ./wrk -t12 -c400 -d30s http://127.0.0.1:8000/
-    Running 30s test @ http://127.0.0.1:8000/
-      12 threads and 400 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency   505.63ms  126.52ms 711.74ms   69.13%
-        Req/Sec    71.24     43.08   238.00     52.78%
-      25157 requests in 30.01s, 7.27MB read
-      Socket errors: connect 0, read 0, write 0, timeout 98
-    Requests/sec:    838.41
-    Transfer/sec:    248.09KB
-
-
-    $ ab -n 1000 -c 4 http://localhost:8000/
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:        0    0   0.0      0       0
-    Processing:     1    4   1.8      4      23
-    Waiting:        1    4   1.8      4      23
-    Total:          1    4   1.8      4      23
